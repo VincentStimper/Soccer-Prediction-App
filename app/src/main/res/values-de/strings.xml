@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Soccer Prediction</string>
+    <string-array name="bundesliga_teams">
+        <item>Augsburg</item>
+        <item>Bayern</item>
+        <item>Bremen</item>
+        <item>Darmstadt</item>
+        <item>Dortmund</item>
+        <item>Frankfurt</item>
+        <item>Freiburg</item>
+        <item>Gladbach</item>
+        <item>Hamburg</item>
+        <item>Hertha</item>
+        <item>Hoffenheim</item>
+        <item>Ingolstadt</item>
+        <item>Köln</item>
+        <item>Leipzig</item>
+        <item>Leverkusen</item>
+        <item>Mainz</item>
+        <item>Schalke</item>
+        <item>Wolfsburg</item>
+    </string-array>
+    <string name="instruction">Wähle eine Begegnung und schätze das Ergebnis.</string>
+    <string name="certainty_text">Wie sicher bist du dir?</string>
+    <string name="predict_text">Fertig</string>
+    <string name="result_text">Ergebnis</string>
+    <string name="teamA_text">Heimmannschaft</string>
+    <string name="goalA_text">Tore Heimmannschaft</string>
+    <string name="teamB_text">Gastmannschaft</string>
+    <string name="goalB_text">Tore Gastmannschaft</string>
+    <string name="win">1</string>
+    <string name="draw">X</string>
+    <string name="loss">2</string>
+</resources>
