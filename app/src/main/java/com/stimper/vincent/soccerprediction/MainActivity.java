@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
                 if (position == indTeamB) {
                     return false;
                 } else {
-                    indTeamA = position;
                     return true;
                 }
             }
@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                 if (position == indTeamA) {
                     return false;
                 } else {
-                    indTeamB = position;
                     return true;
                 }
             }
@@ -106,6 +105,25 @@ public class MainActivity extends AppCompatActivity {
         teamBSpinner.setAdapter(teamBAdapter);
         teamASpinner.setSelection(indTeamA);
         teamBSpinner.setSelection(indTeamB);
+        /*      On item selected listener to disable selected item in the other spinner */
+        teamASpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                indTeamA = position;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+        teamBSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                indTeamB = position;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
         /* Goal spinners */
         Spinner goalASpinner = (Spinner) findViewById(R.id.goalA);
         Spinner goalBSpinner = (Spinner) findViewById(R.id.goalB);
@@ -164,16 +182,18 @@ public class MainActivity extends AppCompatActivity {
         /* Get coefficients */
         /*      Model */
         Resources res = getResources();
-        String[] lambdaAttack = res.getStringArray(R.array.lambda_attack);
-        String[] lambdaDefence = res.getStringArray(R.array.lambda_defence);
+        String[] lambdaAttackHome = res.getStringArray(R.array.lambda_attack_home);
+        String[] lambdaDefenceHome = res.getStringArray(R.array.lambda_defence_home);
+        String[] lambdaAttackAway = res.getStringArray(R.array.lambda_attack_away);
+        String[] lambdaDefenceAway = res.getStringArray(R.array.lambda_defence_away);
         Spinner spinner = (Spinner) findViewById(R.id.teamA);
         indTeamPredA = spinner.getSelectedItemPosition();
         spinner = (Spinner) findViewById(R.id.teamB);
         indTeamPredB = spinner.getSelectedItemPosition();
-        double lambdaAttackA = Double.parseDouble(lambdaAttack[indTeamPredA]);
-        double lambdaAttackB = Double.parseDouble(lambdaAttack[indTeamPredB]);
-        double lambdaDefenceA = Double.parseDouble(lambdaDefence[indTeamPredA]);
-        double lambdaDefenceB = Double.parseDouble(lambdaDefence[indTeamPredB]);
+        double lambdaAttackA = Double.parseDouble(lambdaAttackHome[indTeamPredA]);
+        double lambdaAttackB = Double.parseDouble(lambdaAttackAway[indTeamPredB]);
+        double lambdaDefenceA = Double.parseDouble(lambdaDefenceHome[indTeamPredA]);
+        double lambdaDefenceB = Double.parseDouble(lambdaDefenceAway[indTeamPredB]);
         /*      Guess */
         spinner = (Spinner) findViewById(R.id.certainty);
         double certainty = ((double) spinner.getSelectedItemPosition()) / 10.0; // Probability of user guess
