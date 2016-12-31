@@ -1,34 +1,51 @@
 <resources>
     <string name="app_name">Soccer Prediction</string>
-    <string-array name="bundesliga_teams">
-        <item>Augsburg</item>
-        <item>Bayern</item>
-        <item>Bremen</item>
-        <item>Darmstadt</item>
-        <item>Dortmund</item>
-        <item>Frankfurt</item>
-        <item>Freiburg</item>
-        <item>Gladbach</item>
-        <item>Hamburg</item>
-        <item>Hertha</item>
-        <item>Hoffenheim</item>
-        <item>Ingolstadt</item>
-        <item>Köln</item>
-        <item>Leipzig</item>
-        <item>Leverkusen</item>
-        <item>Mainz</item>
-        <item>Schalke</item>
-        <item>Wolfsburg</item>
-    </string-array>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
     <string name="instruction">Choose teams and guess the result.</string>
     <string name="certainty_text">How certain are you?</string>
     <string name="predict_text">Done</string>
     <string name="result_text">Result</string>
-    <string name="teamA_text">Home team</string>
-    <string name="goalA_text">Goals home team</string>
-    <string name="teamB_text">Guest team</string>
-    <string name="goalB_text">Goals guest team</string>
+    <string name="teamA_text">Home</string>
+    <string name="goalA_text">Goals home</string>
+    <string name="teamB_text">Guest</string>
+    <string name="goalB_text">Goals guest</string>
     <string name="win">1</string>
     <string name="draw">X</string>
     <string name="loss">2</string>
+
+    <!-- League menu -->
+    <!-- Countries -->
+    <string name="bel">Belgium</string>
+    <string name="eng">England</string>
+    <string name="fra">France</string>
+    <string name="ger">Germany</string>
+    <string name="ita">Italy</string>
+    <string name="net">Netherlands</string>
+    <string name="por">Portugal</string>
+    <string name="sco">Scotland</string>
+    <string name="spa">Spain</string>
+    <!-- Leagues -->
+    <string name="bel1">Jupiter Pro League</string>
+    <string name="eng1">Premier League</string>
+    <string name="eng2">EFL Championship</string>
+    <string name="eng3">English Football League One</string>
+    <string name="eng4">English Football League Two</string>
+    <string name="fra1">Le Championnat</string>
+    <string name="fra2">Ligue 2</string>
+    <string name="ger1">1. Bundesliga</string>
+    <string name="ger2">2. Bundesliga</string>
+    <string name="ita1">Serie A</string>
+    <string name="ita2">Serie B</string>
+    <string name="net1">Eredivisie</string>
+    <string name="por1">Primeira Liga</string>
+    <string name="sco1">Scottish Premiership</string>
+    <string name="sco2">Scottish Championship</string>
+    <string name="sco3">Scottish League One</string>
+    <string name="sco4">Scottish League Two</string>
+    <string name="spa1">Primera Division</string>
+    <string name="spa2">Segunda Division</string>
+
 </resources>
