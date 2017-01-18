@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity
         double resultB = 0;
         double pA = 0;
         double pB = 0;
-        double won = 0;
+        double win = 0;
         double loss = 0;
         double draw = 0;
         for (int i = 0; i < 10; i++) {
@@ -309,7 +309,7 @@ public class MainActivity extends AppCompatActivity
                 pA += pA1 * (1 - certainty) + pA2 * certainty;
                 pB += pB1 * (1 - certainty) + pB2 * certainty;
                 if (i > j) {
-                    won += p;
+                    win += p;
                 } else if (i < j) {
                     loss += p;
                 } else {
@@ -317,8 +317,8 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
-        int odds_win = (int) Math.round(won / (won + draw + loss) * 100);
-        int odds_draw = (int) Math.round(draw / (won + draw + loss) * 100);
+        int odds_win = (int) Math.round(win / (win + draw + loss) * 100);
+        int odds_draw = (int) Math.round(draw / (win + draw + loss) * 100);
         int odds_loss = 100 - odds_draw - odds_win;
         if (odds_loss < 0) {
             odds_loss = 0;
@@ -342,9 +342,9 @@ public class MainActivity extends AppCompatActivity
         /* Draw pie chart */
         PieChart pieChart = (PieChart) findViewById(R.id.pie_chart);
         pieChart.removeAllItems();
-        pieChart.addItem((String) getText(R.string.win), loss, 0xff4caf50);
+        pieChart.addItem((String) getText(R.string.loss), loss, 0xfff44336);
         pieChart.addItem((String) getText(R.string.draw), draw, 0xff3f51b5);
-        pieChart.addItem((String) getText(R.string.loss), won, 0xfff44336);
+        pieChart.addItem((String) getText(R.string.win), win, 0xff4caf50);
         pieChart.invalidate();
 
         if (doAnimation) {
