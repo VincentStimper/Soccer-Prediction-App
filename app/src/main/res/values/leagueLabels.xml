@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="league_labels">
+        <item>bel1</item>
+        <item>eng1</item>
+        <item>eng2</item>
+        <item>eng3</item>
+        <item>eng4</item>
+        <item>fra1</item>
+        <item>fra2</item>
+        <item>ger1</item>
+        <item>ger2</item>
+        <item>ita1</item>
+        <item>ita2</item>
+        <item>net1</item>
+        <item>por1</item>
+        <item>sco1</item>
+        <item>sco2</item>
+        <item>sco3</item>
+        <item>sco4</item>
+        <item>spa1</item>
+        <item>spa2</item>
+    </string-array>
+</resources>

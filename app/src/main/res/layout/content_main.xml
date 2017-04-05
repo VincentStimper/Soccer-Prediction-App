@@ -22,16 +22,26 @@
 
         <TextView
             android:id="@+id/league"
-            android:textSize="@dimen/font_size"
+            android:textSize="@dimen/headline_size"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <TextView
+            android:id="@+id/explanation"
+            android:textSize="@dimen/font_size"
+            android:layout_below="@id/league"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/explanation"/>
+
         <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:stretchColumns="*"
-            android:layout_below="@id/league"
+            android:layout_below="@id/explanation"
             android:layout_marginTop="5dp"
             android:id="@+id/inputTable"
             android:layout_width="match_parent"
@@ -137,15 +147,26 @@
             android:id="@+id/prediction_group"
             android:layout_below="@id/predict"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/prediction"
+                android:textSize="@dimen/headline_size"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/prediction"/>
 
             <TableLayout
                 android:id="@+id/result_table"
                 android:layout_centerHorizontal="true"
                 android:layout_width="270dp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_below="@id/prediction"
+                android:layout_marginTop="15dp">
 
                 <TableRow>
                     <TextView

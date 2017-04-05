@@ -16,6 +16,10 @@
     <string name="draw">X</string>
     <string name="loss">2</string>
 
+    <string name="explanation">Guess the result of the match.</string>
+    <string name="prediction">Prediction</string>
+
+
     <!-- League menu -->
     <!-- Countries -->
     <string name="bel">Belgium</string>

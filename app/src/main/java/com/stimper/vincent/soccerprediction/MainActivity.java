@@ -2,9 +2,11 @@ package com.stimper.vincent.soccerprediction;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -25,7 +27,23 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.opencsv.CSVReader;
 import com.stimper.vincent.soccerprediction.charting.PieChart;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -43,13 +61,10 @@ public class MainActivity extends AppCompatActivity
     private static int indTeamPredB = 0;
     /* Flag whether to do animation */
     private static boolean doAnimation = true;
+    /* Team identifiers to access resources, coefficients, ... */
+    private static String[] leagueLabels = new String[19];
     /* League label */
-    private static String leagueLabel = "ger1";
-    /* Resource id model coefficients */
-    private static int idAttackHome = 0;
-    private static int idAttackAway = 0;
-    private static int idDefenceHome = 0;
-    private static int idDefenceAway = 0;
+    private static String currentLeagueLabel = "ger1";
 
 
     @Override
@@ -68,12 +83,24 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        /* Set leagueLabels */
+        Resources resources = getResources();
+        leagueLabels = resources.getStringArray(R.array.league_labels);
 
-        /* Set coefficient ids */
-        idAttackHome = R.array.lambda_attack_home_ger1;
-        idAttackAway = R.array.lambda_attack_away_ger1;
-        idDefenceHome = R.array.lambda_defence_home_ger1;
-        idDefenceAway = R.array.lambda_defence_away_ger1;
+
+
+        /* Get team names and model coefficients */
+
+        /* Get data from assets if necessary */
+        getDataFromAssets();
+
+        /* Download team names and coefficients */
+        String urlBase = "https://vincent.sumpi.org/SoccerPredictionData/";
+        for (String leagueLabel: leagueLabels) {
+            downloadFile(urlBase + "ModelCoefficients/" + leagueLabel + ".csv", "modelCoefficients/" + leagueLabel + ".csv");
+            downloadFile(urlBase + "TeamNames/" + leagueLabel + ".csv", "teamNames/" + leagueLabel + ".csv");
+        }
+
 
 
         /* Build GUI */
@@ -81,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         /* Populate spinners with content
          * see: https://developer.android.com/guide/topics/ui/controls/spinner.html */
         /* Team spinners */
-        setSpinnerTeamAdapters(R.array.team_names_ger1);
+        setSpinnerTeamAdapters();
         /* Goal spinners */
         Spinner goalASpinner = (Spinner) findViewById(R.id.goalA);
         Spinner goalBSpinner = (Spinner) findViewById(R.id.goalB);
@@ -156,101 +183,14 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_bel1) {
-            if (leagueLabel != "bel1") {
-                leagueLabel = "bel1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_eng1) {
-            if (leagueLabel != "eng1") {
-                leagueLabel = "eng1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_eng2) {
-            if (leagueLabel != "eng2") {
-                leagueLabel = "eng2";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_eng3) {
-            if (leagueLabel != "eng3") {
-                leagueLabel = "eng3";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_eng4) {
-            if (leagueLabel != "eng4") {
-                leagueLabel = "eng4";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_fra1) {
-            if (leagueLabel != "fra1") {
-                leagueLabel = "fra1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_fra2) {
-            if (leagueLabel != "fra2") {
-                leagueLabel = "fra2";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_ger1) {
-            if (leagueLabel != "ger1") {
-                leagueLabel = "ger1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_ger2) {
-            if (leagueLabel != "ger2") {
-                leagueLabel = "ger2";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_ita1) {
-            if (leagueLabel != "ita1") {
-                leagueLabel = "ita1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_ita2) {
-            if (leagueLabel != "ita2") {
-                leagueLabel = "ita2";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_net1) {
-            if (leagueLabel != "net1") {
-                leagueLabel = "net1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_por1) {
-            if (leagueLabel != "por1") {
-                leagueLabel = "por1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_sco1) {
-            if (leagueLabel != "sco1") {
-                leagueLabel = "sco1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_sco2) {
-            if (leagueLabel != "sco2") {
-                leagueLabel = "sco2";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_sco3) {
-            if (leagueLabel != "sco3") {
-                leagueLabel = "sco3";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_sco4) {
-            if (leagueLabel != "sco4") {
-                leagueLabel = "sco4";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_spa1) {
-            if (leagueLabel != "spa1") {
-                leagueLabel = "spa1";
-                changeLeague();
-            }
-        } else if (id == R.id.nav_spa2) {
-            if (leagueLabel != "spa2") {
-                leagueLabel = "spa2";
-                changeLeague();
+        Resources resources = getResources();
+        String packageName = getPackageName();
+        for(String leagueLabel: leagueLabels) {
+            if (id == resources.getIdentifier("nav_" + leagueLabel, "id", packageName)) {
+                if (currentLeagueLabel != leagueLabel) {
+                    currentLeagueLabel = new String(leagueLabel);
+                    changeLeague();
+                }
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -262,11 +202,24 @@ public class MainActivity extends AppCompatActivity
     private void predict() {
         /* Get coefficients */
         /*      Model */
-        Resources res = getResources();
-        String[] lambdaAttackHome = res.getStringArray(idAttackHome);
-        String[] lambdaDefenceHome = res.getStringArray(idDefenceHome);
-        String[] lambdaAttackAway = res.getStringArray(idAttackAway);
-        String[] lambdaDefenceAway = res.getStringArray(idDefenceAway);
+        CSVReader csvReader = null;
+        try {
+            csvReader = new CSVReader(new FileReader(getApplicationContext().getFilesDir() + "/modelCoefficients/" + currentLeagueLabel + ".csv"));
+        } catch (IOException e) {
+            Log.e("error", "Could not read modelCoefficients/" + currentLeagueLabel + ".csv.");
+        }
+        String[] lambdaAttackHome = null;
+        String[] lambdaDefenceHome = null;
+        String[] lambdaAttackAway = null;
+        String[] lambdaDefenceAway = null;
+        try {
+            lambdaAttackHome = csvReader.readNext();
+            lambdaAttackAway = csvReader.readNext();
+            lambdaDefenceHome = csvReader.readNext();
+            lambdaDefenceAway = csvReader.readNext();
+        } catch (IOException e) {
+            Log.e("error", "Could not parse modelCoefficients/" + currentLeagueLabel + ".csv.");
+        }
         Spinner spinner = (Spinner) findViewById(R.id.teamA);
         indTeamPredA = spinner.getSelectedItemPosition();
         spinner = (Spinner) findViewById(R.id.teamB);
@@ -392,149 +345,36 @@ public class MainActivity extends AppCompatActivity
         predictionGroup.setVisibility(LinearLayout.INVISIBLE);
         int idLeagueName = 0;
         /* Change teams */
-        if (leagueLabel == "bel1") {
-            idAttackHome = R.array.lambda_attack_home_bel1;
-            idAttackAway = R.array.lambda_attack_away_bel1;
-            idDefenceHome = R.array.lambda_defence_home_bel1;
-            idDefenceAway = R.array.lambda_defence_away_bel1;
-            idLeagueName = R.string.bel1;
-            setSpinnerTeamAdapters(R.array.team_names_bel1);
-        } else if (leagueLabel == "eng1") {
-            idAttackHome = R.array.lambda_attack_home_eng1;
-            idAttackAway = R.array.lambda_attack_away_eng1;
-            idDefenceHome = R.array.lambda_defence_home_eng1;
-            idDefenceAway = R.array.lambda_defence_away_eng1;
-            idLeagueName = R.string.eng1;
-            setSpinnerTeamAdapters(R.array.team_names_eng1);
-        } else if (leagueLabel == "eng2") {
-            idAttackHome = R.array.lambda_attack_home_eng2;
-            idAttackAway = R.array.lambda_attack_away_eng2;
-            idDefenceHome = R.array.lambda_defence_home_eng2;
-            idDefenceAway = R.array.lambda_defence_away_eng2;
-            idLeagueName = R.string.eng2;
-            setSpinnerTeamAdapters(R.array.team_names_eng2);
-        } else if (leagueLabel == "eng3") {
-            idAttackHome = R.array.lambda_attack_home_eng3;
-            idAttackAway = R.array.lambda_attack_away_eng3;
-            idDefenceHome = R.array.lambda_defence_home_eng3;
-            idDefenceAway = R.array.lambda_defence_away_eng3;
-            idLeagueName = R.string.eng3;
-            setSpinnerTeamAdapters(R.array.team_names_eng3);
-        } else if (leagueLabel == "eng4") {
-            idAttackHome = R.array.lambda_attack_home_eng4;
-            idAttackAway = R.array.lambda_attack_away_eng4;
-            idDefenceHome = R.array.lambda_defence_home_eng4;
-            idDefenceAway = R.array.lambda_defence_away_eng4;
-            idLeagueName = R.string.eng4;
-            setSpinnerTeamAdapters(R.array.team_names_eng4);
-        } else if (leagueLabel == "fra1") {
-            idAttackHome = R.array.lambda_attack_home_fra1;
-            idAttackAway = R.array.lambda_attack_away_fra1;
-            idDefenceHome = R.array.lambda_defence_home_fra1;
-            idDefenceAway = R.array.lambda_defence_away_fra1;
-            idLeagueName = R.string.fra1;
-            setSpinnerTeamAdapters(R.array.team_names_fra1);
-        } else if (leagueLabel == "fra2") {
-            idAttackHome = R.array.lambda_attack_home_fra2;
-            idAttackAway = R.array.lambda_attack_away_fra2;
-            idDefenceHome = R.array.lambda_defence_home_fra2;
-            idDefenceAway = R.array.lambda_defence_away_fra2;
-            idLeagueName = R.string.fra2;
-            setSpinnerTeamAdapters(R.array.team_names_fra2);
-        } else if (leagueLabel == "ger1") {
-            idAttackHome = R.array.lambda_attack_home_ger1;
-            idAttackAway = R.array.lambda_attack_away_ger1;
-            idDefenceHome = R.array.lambda_defence_home_ger1;
-            idDefenceAway = R.array.lambda_defence_away_ger1;
-            idLeagueName = R.string.ger1;
-            setSpinnerTeamAdapters(R.array.team_names_ger1);
-        } else if (leagueLabel == "ger2") {
-            idAttackHome = R.array.lambda_attack_home_ger2;
-            idAttackAway = R.array.lambda_attack_away_ger2;
-            idDefenceHome = R.array.lambda_defence_home_ger2;
-            idDefenceAway = R.array.lambda_defence_away_ger2;
-            idLeagueName = R.string.ger2;
-            setSpinnerTeamAdapters(R.array.team_names_ger2);
-        } else if (leagueLabel == "ita1") {
-            idAttackHome = R.array.lambda_attack_home_ita1;
-            idAttackAway = R.array.lambda_attack_away_ita1;
-            idDefenceHome = R.array.lambda_defence_home_ita1;
-            idDefenceAway = R.array.lambda_defence_away_ita1;
-            idLeagueName = R.string.ita1;
-            setSpinnerTeamAdapters(R.array.team_names_ita1);
-        } else if (leagueLabel == "ita2") {
-            idAttackHome = R.array.lambda_attack_home_ita2;
-            idAttackAway = R.array.lambda_attack_away_ita2;
-            idDefenceHome = R.array.lambda_defence_home_ita2;
-            idDefenceAway = R.array.lambda_defence_away_ita2;
-            idLeagueName = R.string.ita2;
-            setSpinnerTeamAdapters(R.array.team_names_ita2);
-        } else if (leagueLabel == "net1") {
-            idAttackHome = R.array.lambda_attack_home_net1;
-            idAttackAway = R.array.lambda_attack_away_net1;
-            idDefenceHome = R.array.lambda_defence_home_net1;
-            idDefenceAway = R.array.lambda_defence_away_net1;
-            idLeagueName = R.string.net1;
-            setSpinnerTeamAdapters(R.array.team_names_net1);
-        } else if (leagueLabel == "por1") {
-            idAttackHome = R.array.lambda_attack_home_por1;
-            idAttackAway = R.array.lambda_attack_away_por1;
-            idDefenceHome = R.array.lambda_defence_home_por1;
-            idDefenceAway = R.array.lambda_defence_away_por1;
-            idLeagueName = R.string.por1;
-            setSpinnerTeamAdapters(R.array.team_names_por1);
-        } else if (leagueLabel == "sco1") {
-            idAttackHome = R.array.lambda_attack_home_sco1;
-            idAttackAway = R.array.lambda_attack_away_sco1;
-            idDefenceHome = R.array.lambda_defence_home_sco1;
-            idDefenceAway = R.array.lambda_defence_away_sco1;
-            idLeagueName = R.string.sco1;
-            setSpinnerTeamAdapters(R.array.team_names_sco1);
-        } else if (leagueLabel == "sco2") {
-            idAttackHome = R.array.lambda_attack_home_sco2;
-            idAttackAway = R.array.lambda_attack_away_sco2;
-            idDefenceHome = R.array.lambda_defence_home_sco2;
-            idDefenceAway = R.array.lambda_defence_away_sco2;
-            idLeagueName = R.string.sco2;
-            setSpinnerTeamAdapters(R.array.team_names_sco2);
-        } else if (leagueLabel == "sco3") {
-            idAttackHome = R.array.lambda_attack_home_sco3;
-            idAttackAway = R.array.lambda_attack_away_sco3;
-            idDefenceHome = R.array.lambda_defence_home_sco3;
-            idDefenceAway = R.array.lambda_defence_away_sco3;
-            idLeagueName = R.string.sco3;
-            setSpinnerTeamAdapters(R.array.team_names_sco3);
-        } else if (leagueLabel == "sco4") {
-            idAttackHome = R.array.lambda_attack_home_sco4;
-            idAttackAway = R.array.lambda_attack_away_sco4;
-            idDefenceHome = R.array.lambda_defence_home_sco4;
-            idDefenceAway = R.array.lambda_defence_away_sco4;
-            idLeagueName = R.string.sco4;
-            setSpinnerTeamAdapters(R.array.team_names_sco4);
-        } else if (leagueLabel == "spa1") {
-            idAttackHome = R.array.lambda_attack_home_spa1;
-            idAttackAway = R.array.lambda_attack_away_spa1;
-            idDefenceHome = R.array.lambda_defence_home_spa1;
-            idDefenceAway = R.array.lambda_defence_away_spa1;
-            idLeagueName = R.string.spa1;
-            setSpinnerTeamAdapters(R.array.team_names_spa1);
-        } else if (leagueLabel == "spa2") {
-            idAttackHome = R.array.lambda_attack_home_spa2;
-            idAttackAway = R.array.lambda_attack_away_spa2;
-            idDefenceHome = R.array.lambda_defence_home_spa2;
-            idDefenceAway = R.array.lambda_defence_away_spa2;
-            idLeagueName = R.string.spa2;
-            setSpinnerTeamAdapters(R.array.team_names_spa2);
+        Resources resources = getResources();
+        String packageName = getPackageName();
+        for(String leagueLabel: leagueLabels) {
+            if (currentLeagueLabel.equals(leagueLabel)) {
+                idLeagueName = resources.getIdentifier(leagueLabel, "string", packageName);
+            }
         }
+        setSpinnerTeamAdapters();
         TextView textView= (TextView) findViewById(R.id.league);
         textView.setText(idLeagueName);
     }
 
-    private void setSpinnerTeamAdapters(int idTeams) {
-        Resources res = getResources();
+    private void setSpinnerTeamAdapters() {
+        /* Sets spinner team adapter to league with currentLeagueLabel */
+        Resources resources = getResources();
+        CSVReader csvReader = null;
+        try {
+            csvReader = new CSVReader(new FileReader(getApplicationContext().getFilesDir() + "/teamNames/" + currentLeagueLabel + ".csv"));
+        } catch (IOException e) {
+            Log.e("error", "Could not read file teamNames/" + currentLeagueLabel + ".csv.");
+        }
+        String[] teamNames = null;
+        try {
+            teamNames = csvReader.readNext();
+        } catch (IOException e) {
+            Log.e("error", "Could not read team names of " + currentLeagueLabel + ".csv.");
+        }
         Spinner teamASpinner = (Spinner) findViewById(R.id.teamA);
         Spinner teamBSpinner = (Spinner) findViewById(R.id.teamB);
-        ArrayAdapter<CharSequence> teamAAdapter =  new ArrayAdapter(this, R.layout.spinner_item, res.getStringArray(idTeams)) {
+        ArrayAdapter<CharSequence> teamAAdapter =  new ArrayAdapter(this, R.layout.spinner_item, teamNames) {
             /* Disable other selected team */
             @Override
             public boolean isEnabled(int position) {
@@ -557,7 +397,7 @@ public class MainActivity extends AppCompatActivity
                 return mView;
             }
         };
-        ArrayAdapter<CharSequence> teamBAdapter =  new ArrayAdapter(this, R.layout.spinner_item, res.getStringArray(idTeams)) {
+        ArrayAdapter<CharSequence> teamBAdapter =  new ArrayAdapter(this, R.layout.spinner_item, teamNames) {
             /* Disable other selected team */
             @Override
             public boolean isEnabled(int position) {
@@ -605,6 +445,165 @@ public class MainActivity extends AppCompatActivity
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+    }
+
+    /* Update team names and model coefficients */
+    private void downloadFile(final String urlName, final String fileName) {
+        new Thread() {
+            public void run() {
+                try {
+                    URL url = new URL(urlName);
+
+                    // Create the new connection
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+                    urlConnection.connect();
+
+                    // Create  new file
+                    File file = new File(getApplicationContext().getFilesDir(), fileName);
+
+                    // Output Stream to download file
+                    FileOutputStream fileOutput = new FileOutputStream(file);
+
+                    // Input stream to read data
+                    InputStream inputStream = urlConnection.getInputStream();
+
+                    // Store total downloaded bytes
+                    int downloadedSize = 0;
+
+                    // Create buffer
+                    byte[] buffer = new byte[1024];
+                    int bufferLength = 0; //used to store a temporary size of the buffer
+
+                    // Read through the input buffer and write contents to the file
+                    while ( (bufferLength = inputStream.read(buffer)) > 0 ) {
+                        // Add the data in the buffer to the file in the file output stream
+                        fileOutput.write(buffer, 0, bufferLength);
+                        // Add up the size so we know how much is downloaded
+                        downloadedSize += bufferLength;
+
+                    }
+                    // Close the output stream when done
+                    fileOutput.close();
+
+                    // Catch some possible errors
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
+    private void getDataFromAssets() {
+        File appDir = getApplicationContext().getFilesDir();
+        File modelCoefficients = new File(appDir, "modelCoefficients");
+        File teamNames = new File(appDir, "teamNames");
+        if (!teamNames.exists() || !modelCoefficients.exists()) {
+            AssetManager assetManager = getApplicationContext().getAssets();
+            if (!teamNames.exists()) {
+                String[] teamNameFiles = null;
+                try {
+                    teamNameFiles = assetManager.list("teamNames");
+                } catch (IOException e) {
+                    Log.e("error", "Failed to get asset file list.", e);
+                }
+                File teamNamesDir = new File(appDir, "teamNames");
+                teamNamesDir.mkdirs();
+                for (String filename : teamNameFiles) {
+                    InputStream in = null;
+                    OutputStream out = null;
+                    try {
+                        in = assetManager.open("teamNames/" + filename);
+                        File outFile = new File(teamNamesDir, filename);
+                        out = new FileOutputStream(outFile);
+                        copyFile(in, out);
+                        in.close();
+                        in = null;
+                        out.flush();
+                        out.close();
+                        out = null;
+                    } catch (IOException e) {
+                        Log.e("error", "Failed to copy asset file: " + filename, e);
+                    }
+                }
+            }
+            if (!modelCoefficients.exists()) {
+                String[] modelCoefficientsFiles = null;
+                try {
+                    modelCoefficientsFiles = assetManager.list("modelCoefficients");
+                } catch (IOException e) {
+                    Log.e("error", "Failed to get asset file list.", e);
+                }
+                File modelCoefficientsDir = new File(appDir, "modelCoefficients");
+                modelCoefficientsDir.mkdirs();
+                for (String filename : modelCoefficientsFiles) {
+                    InputStream in = null;
+                    OutputStream out = null;
+                    try {
+                        in = assetManager.open("modelCoefficients/" + filename);
+                        File outFile = new File(modelCoefficientsDir, filename);
+                        out = new FileOutputStream(outFile);
+                        copyFile(in, out);
+                        in.close();
+                        in = null;
+                        out.flush();
+                        out.close();
+                        out = null;
+                    } catch (IOException e) {
+                        Log.e("error", "Failed to copy asset file: " + filename, e);
+                    }
+                }
+            }
+        }
+    }
+
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
+    }
+
+    /* For debugging */
+    private void logFile(String fileName) {
+        try {
+            // String name = getApplicationContext().getFilesDir() + "/" + fileName;
+            FileInputStream instream = new FileInputStream(new File(getApplicationContext().getFilesDir(), fileName));
+            if (instream != null)
+            {
+                InputStreamReader inputreader = new InputStreamReader(instream);
+                BufferedReader buffreader = new BufferedReader(inputreader);
+                String line,line1 = "";
+                try
+                {
+                    while ((line = buffreader.readLine()) != null) {
+                        line1+=line;
+                        Log.d("debug", line);
+                    }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            Log.e("error", e.getMessage());
+        }
+    }
+    private void logFolderConent(String folderName) {
+        File appDir = getApplicationContext().getFilesDir();
+        File folder = new File(appDir, folderName);
+        File[] listOfFiles = folder.listFiles();
+
+        for (int i = 0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isFile()) {
+                Log.d("debug", "File " + listOfFiles[i].getName());
+            } else if (listOfFiles[i].isDirectory()) {
+                Log.d("debug", "Directory " + listOfFiles[i].getName());
+            }
+        }
     }
 
 }
