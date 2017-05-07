@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity
             csvReader = new CSVReader(new FileReader(getApplicationContext().getFilesDir() + "/modelCoefficients/" + currentLeagueLabel + ".csv"));
         } catch (IOException e) {
             Log.e("error", "Could not read modelCoefficients/" + currentLeagueLabel + ".csv.");
+            return;
         }
         String[] lambdaAttackHome = null;
         String[] lambdaDefenceHome = null;
@@ -219,6 +220,7 @@ public class MainActivity extends AppCompatActivity
             lambdaDefenceAway = csvReader.readNext();
         } catch (IOException e) {
             Log.e("error", "Could not parse modelCoefficients/" + currentLeagueLabel + ".csv.");
+            return;
         }
         Spinner spinner = (Spinner) findViewById(R.id.teamA);
         indTeamPredA = spinner.getSelectedItemPosition();
@@ -365,12 +367,14 @@ public class MainActivity extends AppCompatActivity
             csvReader = new CSVReader(new FileReader(getApplicationContext().getFilesDir() + "/teamNames/" + currentLeagueLabel + ".csv"));
         } catch (IOException e) {
             Log.e("error", "Could not read file teamNames/" + currentLeagueLabel + ".csv.");
+            return;
         }
         String[] teamNames = null;
         try {
             teamNames = csvReader.readNext();
         } catch (IOException e) {
             Log.e("error", "Could not read team names of " + currentLeagueLabel + ".csv.");
+            return;
         }
         Spinner teamASpinner = (Spinner) findViewById(R.id.teamA);
         Spinner teamBSpinner = (Spinner) findViewById(R.id.teamB);
