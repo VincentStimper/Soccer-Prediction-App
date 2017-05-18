@@ -226,10 +226,22 @@ public class MainActivity extends AppCompatActivity
         indTeamPredA = spinner.getSelectedItemPosition();
         spinner = (Spinner) findViewById(R.id.teamB);
         indTeamPredB = spinner.getSelectedItemPosition();
-        double lambdaAttackA = Double.parseDouble(lambdaAttackHome[indTeamPredA]);
-        double lambdaAttackB = Double.parseDouble(lambdaAttackAway[indTeamPredB]);
-        double lambdaDefenceA = Double.parseDouble(lambdaDefenceHome[indTeamPredA]);
-        double lambdaDefenceB = Double.parseDouble(lambdaDefenceAway[indTeamPredB]);
+        double lambdaAttackA = 0;
+        double lambdaAttackB = 0;
+        double lambdaDefenceA = 0;
+        double lambdaDefenceB = 0;
+        try {
+            lambdaAttackA = Double.parseDouble(lambdaAttackHome[indTeamPredA]);
+            lambdaAttackB = Double.parseDouble(lambdaAttackAway[indTeamPredB]);
+            lambdaDefenceA = Double.parseDouble(lambdaDefenceHome[indTeamPredA]);
+            lambdaDefenceB = Double.parseDouble(lambdaDefenceAway[indTeamPredB]);
+        } catch (Exception e) {
+            Log.e("error", "Could not access team spinner.");
+            lambdaAttackA = Double.parseDouble(lambdaAttackHome[0]);
+            lambdaAttackB = Double.parseDouble(lambdaAttackAway[0]);
+            lambdaDefenceA = Double.parseDouble(lambdaDefenceHome[0]);
+            lambdaDefenceB = Double.parseDouble(lambdaDefenceAway[0]);
+        }
         /*      Guess */
         spinner = (Spinner) findViewById(R.id.certainty);
         double certainty = ((double) spinner.getSelectedItemPosition()) / 10.0; // Probability of user guess
@@ -376,79 +388,87 @@ public class MainActivity extends AppCompatActivity
             Log.e("error", "Could not read team names of " + currentLeagueLabel + ".csv.");
             return;
         }
-        Spinner teamASpinner = (Spinner) findViewById(R.id.teamA);
-        Spinner teamBSpinner = (Spinner) findViewById(R.id.teamB);
-        ArrayAdapter<CharSequence> teamAAdapter =  new ArrayAdapter(this, R.layout.spinner_item, teamNames) {
-            /* Disable other selected team */
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == indTeamB) {
-                    return false;
-                } else {
-                    return true;
+        try {
+            Spinner teamASpinner = (Spinner) findViewById(R.id.teamA);
+            Spinner teamBSpinner = (Spinner) findViewById(R.id.teamB);
+            ArrayAdapter<CharSequence> teamAAdapter = new ArrayAdapter(this, R.layout.spinner_item, teamNames) {
+                /* Disable other selected team */
+                @Override
+                public boolean isEnabled(int position) {
+                    if (position == indTeamB) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                 }
-            }
-            /* Change color of disabled field */
-            @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                View mView = super.getDropDownView(position, convertView, parent);
-                TextView mTextView = (TextView) mView;
-                if (position == indTeamB) {
-                    mTextView.setTextColor(Color.GRAY);
-                } else {
-                    mTextView.setTextColor(Color.BLACK);
+
+                /* Change color of disabled field */
+                @Override
+                public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                    View mView = super.getDropDownView(position, convertView, parent);
+                    TextView mTextView = (TextView) mView;
+                    if (position == indTeamB) {
+                        mTextView.setTextColor(Color.GRAY);
+                    } else {
+                        mTextView.setTextColor(Color.BLACK);
+                    }
+                    return mView;
                 }
-                return mView;
-            }
-        };
-        ArrayAdapter<CharSequence> teamBAdapter =  new ArrayAdapter(this, R.layout.spinner_item, teamNames) {
-            /* Disable other selected team */
-            @Override
-            public boolean isEnabled(int position) {
-                if (position == indTeamA) {
-                    return false;
-                } else {
-                    return true;
+            };
+            ArrayAdapter<CharSequence> teamBAdapter = new ArrayAdapter(this, R.layout.spinner_item, teamNames) {
+                /* Disable other selected team */
+                @Override
+                public boolean isEnabled(int position) {
+                    if (position == indTeamA) {
+                        return false;
+                    } else {
+                        return true;
+                    }
                 }
-            }
-            /* Change color of disabled field */
-            @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                View mView = super.getDropDownView(position, convertView, parent);
-                TextView mTextView = (TextView) mView;
-                if (position == indTeamA) {
-                    mTextView.setTextColor(Color.GRAY);
-                } else {
-                    mTextView.setTextColor(Color.BLACK);
+
+                /* Change color of disabled field */
+                @Override
+                public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                    View mView = super.getDropDownView(position, convertView, parent);
+                    TextView mTextView = (TextView) mView;
+                    if (position == indTeamA) {
+                        mTextView.setTextColor(Color.GRAY);
+                    } else {
+                        mTextView.setTextColor(Color.BLACK);
+                    }
+                    return mView;
                 }
-                return mView;
-            }
-        };
-        teamAAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        teamBAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        teamASpinner.setAdapter(teamAAdapter);
-        teamBSpinner.setAdapter(teamBAdapter);
-        teamASpinner.setSelection(indTeamA);
-        teamBSpinner.setSelection(indTeamB);
+            };
+            teamAAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            teamBAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            teamASpinner.setAdapter(teamAAdapter);
+            teamBSpinner.setAdapter(teamBAdapter);
+            teamASpinner.setSelection(indTeamA);
+            teamBSpinner.setSelection(indTeamB);
         /*      On item selected listener to disable selected item in the other spinner */
-        teamASpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                indTeamA = position;
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-        teamBSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                indTeamB = position;
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+            teamASpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    indTeamA = position;
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+            teamBSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    indTeamB = position;
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+        } catch (Exception e) {
+            Log.e("error", "Team adapter setup failed.");
+        }
     }
 
     /* Update team names and model coefficients */
